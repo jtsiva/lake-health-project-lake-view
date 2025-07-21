@@ -3,92 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Slideshow</title>
+    <title>Lake Images Slideshow</title>
     <style>
-        body {
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: Arial, sans-serif;
             min-height: 100vh;
-        }
-        
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 20;
-            transition: all 0.3s ease;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
-        
-        .nav-btn:hover {
-            background: rgba(0, 0, 0, 0.9);
-            transform: translateY(-50%) scale(1.1);
-        }
-        
-        .nav-btn:active {
-            transform: translateY(-50%) scale(0.95);
-        }
-        
-        .nav-btn.prev {
-            left: 15px;
-        }
-        
-        .nav-btn.next {
-            right: 15px;
-        }
-        
-        .slide-counter {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 8px 16px;
+
+        .slideshow-container {
+            position: relative;
+            width: 90vw;
+            max-width: 1000px;
+            height: 70vh;
+            max-height: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            font-size: 14px;
-            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
-        
-        .slide-dots {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 10;
+
+        .slide {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
         }
-        
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: background 0.3s ease;
+
+        .slide.active {
+            display: block;
         }
-        
-        .dot.active {
-            background: white;
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
         }
-        
-        .dot:hover {
-            background: rgba(255, 255, 255, 0.8);
-        }
-        
+
         .hotspot {
             position: absolute;
             width: 40px;
@@ -100,67 +64,209 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #667eea;
             font-weight: bold;
+            color: #667eea;
             transition: all 0.3s ease;
+            animation: pulse 2s infinite;
         }
-        
+
         .hotspot:hover {
             background: #667eea;
             color: white;
-            transform: scale(1.1);
+            transform: scale(1.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+        }
+
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-arrow:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-arrow.prev {
+            left: 20px;
+        }
+
+        .nav-arrow.next {
+            right: 20px;
+        }
+
+        .slide-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        .slide-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+            transition: right 0.4s ease;
+            z-index: 20;
+            overflow-y: auto;
+        }
+
+        .info-panel.open {
+            right: 0;
+        }
+
+        .info-panel h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .info-panel p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #667eea;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .dots-container {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: white;
+            transform: scale(1.2);
         }
     </style>
 </head>
 <body>
-    <div style="position: relative; width: 100%; max-width: 1000px; height: 600px; margin: 0 auto; background: rgba(255, 255, 255, 0.1); border-radius: 20px; overflow: hidden;">
-        <!-- Navigation Buttons -->
-        <button class="nav-btn prev" onclick="changeSlide(-1)">❮</button>
-        <button class="nav-btn next" onclick="changeSlide(1)">❯</button>
-        
+    <div class="slideshow-container">
         <!-- Slide 1: Southwest View -->
-        <div id="slide1" class="slide" style="display: block; position: relative; width: 100%; height: 100%; cursor: crosshair;">
-            <div style="position: absolute; top: 20px; left: 20px; background: rgba(0, 0, 0, 0.7); color: white; padding: 12px 20px; border-radius: 10px; font-size: 18px; z-index: 10;">Southwest View</div>
-            <img style="width: 100%; height: 100%; border-radius: 20px; object-fit: cover;" src="images/lake_sw.jpg" alt="Southwest View" />
-            <div class="hotspot" style="top: 30%; left: 20%;" onclick="showHotspotInfo('Southwest', 1)">1</div>
-            <div class="hotspot" style="top: 60%; left: 70%;" onclick="showHotspotInfo('Southwest', 2)">2</div>
-            <div class="hotspot" style="top: 40%; left: 50%;" onclick="showHotspotInfo('Southwest', 3)">3</div>
+        <div class="slide active">
+            <div class="slide-title">Southwest View</div>
+            <img src="images/lake_sw.jpg" alt="Southwest View">
+            <div class="hotspot" style="top: 30%; left: 20%;" data-info="dock">1</div>
+            <div class="hotspot" style="top: 60%; left: 70%;" data-info="vegetation">2</div>
+            <div class="hotspot" style="top: 40%; left: 50%;" data-info="water">3</div>
         </div>
-        
+
         <!-- Slide 2: South View -->
-        <div id="slide2" class="slide" style="display: none; position: relative; width: 100%; height: 100%; cursor: crosshair;">
-            <div style="position: absolute; top: 20px; left: 20px; background: rgba(0, 0, 0, 0.7); color: white; padding: 12px 20px; border-radius: 10px; font-size: 18px; z-index: 10;">South View</div>
-            <img style="width: 100%; height: 100%; border-radius: 20px; object-fit: cover;" src="images/lake_s.jpg" alt="South View" />
-            <div class="hotspot" style="top: 25%; left: 30%;" onclick="showHotspotInfo('South', 1)">1</div>
-            <div class="hotspot" style="top: 70%; left: 15%;" onclick="showHotspotInfo('South', 2)">2</div>
-            <div class="hotspot" style="top: 50%; left: 60%;" onclick="showHotspotInfo('South', 3)">3</div>
+        <div class="slide">
+            <div class="slide-title">South View</div>
+            <img src="images/lake_s.jpg" alt="South View">
+            <div class="hotspot" style="top: 25%; left: 30%;" data-info="mountains">1</div>
+            <div class="hotspot" style="top: 70%; left: 15%;" data-info="rocks">2</div>
+            <div class="hotspot" style="top: 50%; left: 60%;" data-info="reflection">3</div>
         </div>
-        
+
         <!-- Slide 3: Northeast View -->
-        <div id="slide3" class="slide" style="display: none; position: relative; width: 100%; height: 100%; cursor: crosshair;">
-            <div style="position: absolute; top: 20px; left: 20px; background: rgba(0, 0, 0, 0.7); color: white; padding: 12px 20px; border-radius: 10px; font-size: 18px; z-index: 10;">Northeast View</div>
-            <img style="width: 100%; height: 100%; border-radius: 20px; object-fit: cover;" src="images/lake_ne.jpg" alt="Northeast View" />
-            <div class="hotspot" style="top: 20%; left: 40%;" onclick="showHotspotInfo('Northeast', 1)">1</div>
-            <div class="hotspot" style="top: 80%; left: 25%;" onclick="showHotspotInfo('Northeast', 2)">2</div>
-            <div class="hotspot" style="top: 60%; left: 70%;" onclick="showHotspotInfo('Northeast', 3)">3</div>
+        <div class="slide">
+            <div class="slide-title">Northeast View</div>
+            <img src="images/lake_ne.jpg" alt="Northeast View">
+            <div class="hotspot" style="top: 20%; left: 40%;" data-info="sunset">1</div>
+            <div class="hotspot" style="top: 80%; left: 25%;" data-info="foreground">2</div>
+            <div class="hotspot" style="top: 60%; left: 70%;" data-info="silhouette">3</div>
         </div>
-        
+
         <!-- Slide 4: Northwest View -->
-        <div id="slide4" class="slide" style="display: none; position: relative; width: 100%; height: 100%; cursor: crosshair;">
-            <div style="position: absolute; top: 20px; left: 20px; background: rgba(0, 0, 0, 0.7); color: white; padding: 12px 20px; border-radius: 10px; font-size: 18px; z-index: 10;">Northwest View</div>
-            <img style="width: 100%; height: 100%; border-radius: 20px; object-fit: cover;" src="images/lake_nw.jpg" alt="Northwest View" />
-            <div class="hotspot" style="top: 30%; left: 80%;" onclick="showHotspotInfo('Northwest', 1)">1</div>
-            <div class="hotspot" style="top: 70%; left: 40%;" onclick="showHotspotInfo('Northwest', 2)">2</div>
-            <div class="hotspot" style="top: 45%; left: 60%;" onclick="showHotspotInfo('Northwest', 3)">3</div>
+        <div class="slide">
+            <div class="slide-title">Northwest View</div>
+            <img src="images/lake_nw.jpg" alt="Northwest View">
+            <div class="hotspot" style="top: 30%; left: 80%;" data-info="forest">1</div>
+            <div class="hotspot" style="top: 70%; left: 40%;" data-info="shore">2</div>
+            <div class="hotspot" style="top: 45%; left: 60%;" data-info="clarity">3</div>
         </div>
-        
+
+        <!-- Navigation Arrows -->
+        <button class="nav-arrow prev" onclick="changeSlide(-1)">❮</button>
+        <button class="nav-arrow next" onclick="changeSlide(1)">❯</button>
+
         <!-- Slide Counter -->
         <div class="slide-counter">
             <span id="current-slide">1</span> / <span id="total-slides">4</span>
         </div>
-        
-        <!-- Slide Dots -->
-        <div class="slide-dots">
+
+        <!-- Dots Navigation -->
+        <div class="dots-container">
             <span class="dot active" onclick="currentSlide(1)"></span>
             <span class="dot" onclick="currentSlide(2)"></span>
             <span class="dot" onclick="currentSlide(3)"></span>
@@ -168,62 +274,134 @@
         </div>
     </div>
 
+    <!-- Info Panel -->
+    <div class="info-panel" id="info-panel">
+        <button class="close-btn" onclick="closeInfo()">×</button>
+        <div id="info-content">
+            <h3>Select a hotspot to learn more</h3>
+            <p>Click on any numbered hotspot in the images to discover interesting details about different aspects of the lake environment.</p>
+        </div>
+    </div>
+
     <script>
-        let slideIndex = 1;
-        const totalSlides = 4;
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = slides.length;
 
-        function changeSlide(direction) {
-            slideIndex += direction;
-            
-            // Loop around if at the beginning or end
-            if (slideIndex > totalSlides) {
-                slideIndex = 1;
-            } else if (slideIndex < 1) {
-                slideIndex = totalSlides;
+        // Information content for each hotspot
+        const infoData = {
+            dock: {
+                title: "Wooden Dock",
+                content: "This wooden dock provides access to the lake for fishing, boating, and swimming. Docks like this are typically made from pressure-treated lumber to withstand constant exposure to water and weather. They serve as important gathering points for lake activities and wildlife observation."
+            },
+            vegetation: {
+                title: "Lake Vegetation",
+                content: "The vegetation along the shoreline plays a crucial role in the lake ecosystem. These plants help prevent erosion, filter runoff water, and provide habitat for various wildlife species. Common lakeside plants include cattails, sedges, and various aquatic grasses."
+            },
+            water: {
+                title: "Clear Lake Water",
+                content: "The clarity of lake water depends on various factors including nutrient levels, algae growth, and sediment. Clear water like this indicates a healthy lake ecosystem with balanced nutrients and good water circulation. It's perfect for swimming and supports diverse aquatic life."
+            },
+            mountains: {
+                title: "Mountain Range",
+                content: "These mountains form the watershed that feeds the lake through streams and snowmelt. Mountain lakes are often fed by glacial runoff and have cooler temperatures year-round. The surrounding peaks protect the lake from strong winds and create unique microclimates."
+            },
+            rocks: {
+                title: "Rocky Shoreline",
+                content: "Rocky shorelines are formed by geological processes over thousands of years. These rocks provide habitat for fish and other aquatic organisms, while also helping to protect the shoreline from erosion. They're popular spots for fishing and wildlife observation."
+            },
+            reflection: {
+                title: "Mountain Reflection",
+                content: "The mirror-like reflection occurs when the water surface is perfectly calm, creating a natural mirror effect. This phenomenon is most common during early morning or late evening when winds are minimal. It's a favorite subject for photographers and nature enthusiasts."
+            },
+            sunset: {
+                title: "Golden Hour Lighting",
+                content: "The golden hour creates this warm, magical lighting that photographers love. During sunset, the sun's angle creates longer wavelengths of light, producing the golden and orange hues. This time of day is ideal for capturing the lake's beauty and wildlife activity."
+            },
+            foreground: {
+                title: "Shoreline Elements",
+                content: "The foreground elements like logs, rocks, and vegetation add depth and interest to the lake scene. These natural features provide habitat for small animals and insects, and help frame the view of the lake. They're important for the overall ecosystem balance."
+            },
+            silhouette: {
+                title: "Tree Silhouettes",
+                content: "The silhouetted trees create dramatic contrast against the bright sky. These trees are likely adapted to lakeside conditions and may include species like willows, birches, or pines. They provide nesting sites for birds and shade for the water, helping maintain cool temperatures."
+            },
+            forest: {
+                title: "Forest Canopy",
+                content: "The dense forest surrounding the lake creates a protected environment and contributes to the lake's ecosystem. Trees help regulate water temperature, prevent erosion, and provide habitat for numerous species. They also contribute organic matter that feeds the lake's food web."
+            },
+            shore: {
+                title: "Natural Shoreline",
+                content: "This natural shoreline shows the transition zone between terrestrial and aquatic environments. It's home to specialized plants and animals adapted to fluctuating water levels. The gradual slope allows for diverse habitats at different depths."
+            },
+            clarity: {
+                title: "Water Clarity",
+                content: "The exceptional clarity of this forest lake indicates excellent water quality with low nutrient levels and minimal pollution. Clear water allows sunlight to penetrate deeper, supporting aquatic plant growth and creating ideal conditions for fish and other aquatic life."
             }
-            
-            showSlide(slideIndex);
-        }
+        };
 
-        function currentSlide(n) {
-            slideIndex = n;
-            showSlide(slideIndex);
-        }
-
-        function showSlide(n) {
-            // Hide all slides
-            const slides = document.querySelectorAll('.slide');
-            slides.forEach(slide => slide.style.display = 'none');
-            
-            // Remove active class from all dots
-            const dots = document.querySelectorAll('.dot');
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
             dots.forEach(dot => dot.classList.remove('active'));
             
-            // Show current slide
-            document.getElementById(`slide${n}`).style.display = 'block';
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
             
-            // Update active dot
-            dots[n - 1].classList.add('active');
-            
-            // Update slide counter
-            document.getElementById('current-slide').textContent = n;
+            document.getElementById('current-slide').textContent = index + 1;
         }
 
-        function showHotspotInfo(view, hotspotNumber) {
-            alert(`Hotspot ${hotspotNumber} clicked in ${view} view!`);
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = 0;
+            if (currentSlideIndex < 0) currentSlideIndex = totalSlides - 1;
+            showSlide(currentSlideIndex);
         }
 
-        // Keyboard navigation
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowLeft') {
-                changeSlide(-1);
-            } else if (event.key === 'ArrowRight') {
-                changeSlide(1);
+        function currentSlide(index) {
+            currentSlideIndex = index - 1;
+            showSlide(currentSlideIndex);
+        }
+
+        function showInfo(key) {
+            const panel = document.getElementById('info-panel');
+            const content = document.getElementById('info-content');
+            const info = infoData[key];
+            
+            if (info) {
+                content.innerHTML = `
+                    <h3>${info.title}</h3>
+                    <p>${info.content}</p>
+                    <p><em>Click the × button to close this panel and continue exploring.</em></p>
+                `;
+                panel.classList.add('open');
             }
+        }
+
+        function closeInfo() {
+            document.getElementById('info-panel').classList.remove('open');
+        }
+
+        // Add click event listeners to hotspots
+        document.addEventListener('DOMContentLoaded', function() {
+            const hotspots = document.querySelectorAll('.hotspot');
+            hotspots.forEach(hotspot => {
+                hotspot.addEventListener('click', function() {
+                    const infoKey = this.getAttribute('data-info');
+                    showInfo(infoKey);
+                });
+            });
         });
 
-        // Initialize
-        showSlide(slideIndex);
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Escape') closeInfo();
+        });
+
+        // Auto-advance slides (optional - uncomment to enable)
+        // setInterval(() => changeSlide(1), 10000);
     </script>
 </body>
 </html>
