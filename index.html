@@ -342,6 +342,7 @@
         };
 
         function showSlide(index) {
+            document.getElementByClass('slide-title').focus()
             slides.forEach(slide => slide.classList.remove('active'));
             dots.forEach(dot => dot.classList.remove('active'));
             
@@ -375,6 +376,7 @@
                     <p><em>Click the × button to close this panel and continue exploring.</em></p>
                 `;
                 panel.classList.add('open');
+                panel.focus();
             }
         }
 
