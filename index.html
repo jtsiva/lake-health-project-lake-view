@@ -342,7 +342,7 @@
         };
 
         function showSlide(index) {
-            document.getElementByClass('slide-title').focus()
+            document.querySelector('.slide-title').focus()
             slides.forEach(slide => slide.classList.remove('active'));
             dots.forEach(dot => dot.classList.remove('active'));
             
